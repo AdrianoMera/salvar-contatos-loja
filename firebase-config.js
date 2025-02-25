@@ -17,3 +17,5 @@ const app = initializeApp(firebaseConfig);
 const bancoDeDados = getFirestore(app);
 
 export { bancoDeDados };
+
+
