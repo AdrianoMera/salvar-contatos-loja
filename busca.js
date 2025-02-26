@@ -19,7 +19,6 @@ class BuscarClientes {
   }
 
   eventos() {
-    // Evento de busca ao digitar
     this.campoBuscar.addEventListener("input", () => {
       this.buscarClientes();
     });
@@ -34,38 +33,38 @@ class BuscarClientes {
     }
 
     try {
-      // Buscando por referência
-      const queryRef = query(
+      const consultarPorRef = query(
         this.clientesRef,
         where("referencia", "==", valorBuscado)
       );
 
-      // Buscando por modelo
-      const queryModelo = query(
+      const consultarPorModelo = query(
         this.clientesRef,
         where("modelo", "==", valorBuscado)
       );
 
       // Executando as duas buscas em paralelo
-      const [snapRef, snapModelo] = await Promise.all([
-        getDocs(queryRef),
-        getDocs(queryModelo),
+      const [refConsultada, modeloConsultado] = await Promise.all([
+        getDocs(consultarPorRef),
+        getDocs(consultarPorModelo),
       ]);
 
       // Combinando resultados únicos
       const clientesFiltrados = [];
-      snapRef.forEach((doc) => {
+
+      refConsultada.forEach((doc) => {
         clientesFiltrados.push({ id: doc.id, ...doc.data() });
       });
 
-      snapModelo.forEach((doc) => {
+      modeloConsultado.forEach((doc) => {
         // Evita duplicatas se o mesmo documento aparecer nas duas queries
-        if (!clientesFiltrados.some((c) => c.id === doc.id)) {
+        if (!clientesFiltrados.some((cliente) => cliente.id === doc.id)) {
           clientesFiltrados.push({ id: doc.id, ...doc.data() });
         }
       });
 
       this.exibirResultados(clientesFiltrados);
+
     } catch (error) {
       console.error("Erro ao buscar clientes:", error);
       this.resultados.innerHTML =
@@ -147,12 +146,14 @@ class BuscarClientes {
     const novoBtnNAO = document.querySelector(".nao");
 
     novoBtnSIM.addEventListener("click", async () => {
+
       try {
         await this.excluiCliente(cliente);
         alert(`Cliente ${cliente.cliente} excluído!`);
         modal.classList.remove("ativo");
         // Atualiza a busca para mostrar os resultados atualizados
         this.buscarClientes();
+        
       } catch (error) {
         console.error("Erro ao excluir cliente:", error);
         alert("Erro ao excluir cliente. Tente novamente.");

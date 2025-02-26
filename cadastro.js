@@ -1,8 +1,5 @@
 import { bancoDeDados } from "./firebase-config.js";
-import {
-  collection,
-  addDoc,
-} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { collection, addDoc, } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 class EsperandoProduto {
   constructor() {
@@ -17,7 +14,7 @@ class EsperandoProduto {
   eventos() {
     this.form.addEventListener("submit", async (e) => {
       e.preventDefault();
-      await this.tratandoEnvio(e);
+      await this.tratandoEnvio();
     });
 
     const campos = document.querySelectorAll("input");
@@ -35,20 +32,21 @@ class EsperandoProduto {
     });
   }
 
-  async tratandoEnvio(e) {
+  async tratandoEnvio() {
     const dadosDoCliente = this.camposValidos();
 
     if (dadosDoCliente) {
       try {
-        const docRef = await addDoc(this.clientesRef, {
-          ...dadosDoCliente,
+        const docRef = await addDoc(this.clientesRef, {...dadosDoCliente,
           referencia: dadosDoCliente.referencia.toLowerCase(),
           modelo: dadosDoCliente.modelo.toLowerCase(),
           dataCriacao: new Date().toISOString(),
         });
+
         console.log("Cliente salvo com ID:", docRef.id);
         alert("Cliente salvo com sucesso!");
         this.limparFormulario();
+
       } catch (error) {
         console.error("Erro ao salvar cliente:", error);
         alert("Erro ao salvar cliente. Tente novamente.");
@@ -94,12 +92,11 @@ class EsperandoProduto {
         valido = false;
       }
 
-      if (
-        (campo.classList.contains("cor") ||
-          campo.classList.contains("modelo")) &&
-        campo.value.trim() !== "" &&
-        !isNaN(campo.value)
-      ) {
+      if ((
+          campo.classList.contains("cor") || 
+          campo.classList.contains("modelo")) && 
+          campo.value.trim() !== "" && 
+          !isNaN(campo.value)) {
         this.criaErro(campo, `Somente letras!`);
         valido = false;
       }
